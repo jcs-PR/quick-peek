@@ -58,9 +58,19 @@
   :type 'boolean)
 
 (defcustom quick-peek-add-padding t
-  "If -non-nil, add padding to each spacer."
+  "If non-nil, add padding to each spacer."
   :group 'quick-peek
   :type 'boolean)
+
+(defcustom quick-peek-header "\n"
+  "String inserted at the top of the spacer."
+  :type 'string
+  :group 'quick-peek)
+
+(defcustom quick-peek-footer "\n"
+  "String inserted at the bottom of the spacer."
+  :type 'string
+  :group 'quick-peek)
 
 ;;; Variables
 
@@ -151,12 +161,12 @@ Optionally adds an ELLIPSIS at the end."
 (defun quick-peek--insert-spacer (pos str-before str-after)
   "Insert a thin horizontal line at POS.
 Line is surrounded by STR-BEFORE and STR-AFTER."
-  (save-excursion
-    (goto-char pos)
-    (quick-peek--insert-padding str-before)
-    (let* ((color (or (face-attribute 'highlight :background) "black")))
-      (insert (propertize "\n" 'face `(:background ,color :inherit quick-peek-border-face))))
-    (quick-peek--insert-padding str-after)))
+  (let ((str (if (= pos (point-min)) quick-peek-header quick-peek-footer)))
+    (save-excursion
+      (goto-char pos)
+      (quick-peek--insert-padding str-before)
+      (insert str)
+      (quick-peek--insert-padding str-after))))
 
 ;;; Core
 
