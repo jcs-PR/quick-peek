@@ -57,6 +57,11 @@
   :group 'quick-peek
   :type 'boolean)
 
+(defcustom quick-peek-add-padding t
+  "If -non-nil, add padding to each spacer."
+  :group 'quick-peek
+  :type 'boolean)
+
 ;;; Variables
 
 (defvar-local quick-peek--overlays nil
@@ -138,15 +143,20 @@ Optionally adds an ELLIPSIS at the end."
       (insert prefix)
       (forward-line 1))))
 
+(defun quick-peek--insert-padding (str)
+  "Insert padding around spacer."
+  (when quick-peek-add-padding
+    (insert (propertize str 'face 'quick-peek-padding-face))))
+
 (defun quick-peek--insert-spacer (pos str-before str-after)
   "Insert a thin horizontal line at POS.
 Line is surrounded by STR-BEFORE and STR-AFTER."
   (save-excursion
     (goto-char pos)
-    (insert (propertize str-before 'face 'quick-peek-padding-face))
+    (quick-peek--insert-padding str-before)
     (let* ((color (or (face-attribute 'highlight :background) "black")))
       (insert (propertize "\n" 'face `(:background ,color :inherit quick-peek-border-face))))
-    (insert (propertize str-after 'face 'quick-peek-padding-face))))
+    (quick-peek--insert-padding str-after)))
 
 ;;; Core
 
